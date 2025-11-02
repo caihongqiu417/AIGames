@@ -50,6 +50,7 @@
     <Compile Include="Assets\BehaviourTree\Leaf.cs" />
     <Compile Include="Assets\BehaviourTree\Sequence.cs" />
     <Compile Include="Assets\BehaviourTree\Selector.cs" />
+    <Compile Include="Assets\BehaviourTree\Lock.cs" />
     <Compile Include="Assets\BehaviourTree\Node.cs" />
     <Compile Include="Assets\BehaviourTree\BehaviourTree.cs" />
     <Reference Include="UnityEngine">
