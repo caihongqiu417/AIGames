@@ -30,6 +30,8 @@ public class RobberBehaviour : MonoBehaviour
         tree = new BehaviourTree();
         Sequence steal = new Sequence("Steal");
         Selector opendoor = new Selector("opendoor");
+        
+        Inverter invertMoney=new Inverter("invertMoney");
 
 
         Leaf goToDiamond = new Leaf("Go to Diamond", GoToDiamond);
@@ -37,11 +39,12 @@ public class RobberBehaviour : MonoBehaviour
         Leaf goToBackdoor = new Leaf("Go to Backdoor", GoToBackdoor);
         Leaf goToFrontdoor = new Leaf("Go to Frontdoor", GoToFrontdoor);
         Leaf gotoVan = new Leaf("Go to Van", GoToVan);
-
+        
+        invertMoney.AddChild(hasGotMoney);
         
         opendoor.AddChild(goToBackdoor);
         opendoor.AddChild(goToFrontdoor);
-        steal.AddChild(hasGotMoney);
+        steal.AddChild(invertMoney);
         steal.AddChild(opendoor);
         steal.AddChild(goToDiamond);
 
@@ -86,13 +89,13 @@ public class RobberBehaviour : MonoBehaviour
 
     public Node.Status HasMoney()
     {
-        if (money >= 500)
+        if (money >= 500)  // 有钱的情况返回SUCCESS
         {
-            return Node.Status.FAILURE;
+            return Node.Status.SUCCESS;
         }
         else
         {
-            return Node.Status.SUCCESS;
+            return Node.Status.FAILURE;
         }
     }
     public Node.Status GoToVan()

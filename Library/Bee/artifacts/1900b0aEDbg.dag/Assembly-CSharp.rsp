@@ -354,6 +354,7 @@
 -analyzer:"D:/UnityEditor/2022.3.60f1c1/Editor/Data/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"D:/UnityEditor/2022.3.60f1c1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/BehaviourTree/BehaviourTree.cs"
+"Assets/BehaviourTree/Inverter.cs"
 "Assets/BehaviourTree/Leaf.cs"
 "Assets/BehaviourTree/Lock.cs"
 "Assets/BehaviourTree/Node.cs"
