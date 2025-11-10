@@ -20,12 +20,12 @@ public class RobberBehaviour : BTAgent
         base.Start();
         
         Sequence steal = new Sequence("Steal");
-        Selector opendoor = new Selector("opendoor");
+        DynamicPSelector opendoor = new DynamicPSelector("Dynamic Door");
         Inverter invertMoney = new Inverter("invertMoney");
-        Selector selectLoot = new Selector("Select Loot");  // 🎯 新增：选择战利品
+        PSelector selectLoot = new PSelector("Select Loot");  // 🎯 新增：选择战利品
 
-        Leaf goToDiamond = new Leaf("Go to Diamond", GoToDiamond);
-        Leaf goToPainting = new Leaf("Go to Painting", GoToPainting);  // 🎯 新增：偷画节点
+        Leaf goToDiamond = new Leaf("Go to Diamond", GoToDiamond,1);
+        Leaf goToPainting = new Leaf("Go to Painting", GoToPainting,2);  // 🎯 新增：偷画节点
         Leaf hasGotMoney = new Leaf("HasGotMoney", HasMoney);
         Leaf goToBackdoor = new Leaf("Go to Backdoor", GoToBackdoor);
         Leaf goToFrontdoor = new Leaf("Go to Frontdoor", GoToFrontdoor);

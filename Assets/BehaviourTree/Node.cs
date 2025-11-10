@@ -16,6 +16,7 @@ public class Node
     public List<Node> children = new List<Node>();
     public int currentChild = 0;
     public string name;
+    public int sortOrder;
     
     public Node()
     {
@@ -24,6 +25,12 @@ public class Node
     public Node(string name)
     {
         this.name = name;
+    }
+    
+    public Node(string name,int sortOrder)
+    {
+        this.name = name;
+        this.sortOrder = sortOrder;
     }
 
     public virtual Status Process()
