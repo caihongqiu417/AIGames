@@ -54,6 +54,7 @@
     <Compile Include="Assets\BehaviourTree\Inverter.cs" />
     <Compile Include="Assets\BehaviourTree\Node.cs" />
     <Compile Include="Assets\BehaviourTree\BehaviourTree.cs" />
+    <Compile Include="Assets\BehaviourTree\BTAgent.cs" />
     <Reference Include="UnityEngine">
       <HintPath>D:\UnityEditor\2022.3.60f1c1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
