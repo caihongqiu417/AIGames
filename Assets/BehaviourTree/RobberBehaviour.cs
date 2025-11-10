@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class RobberBehaviour : BTAgent
 {
     public GameObject diamond;
-    public GameObject painting;  // 🎯 新增：画作
+    public GameObject[] art;
     public GameObject van;
     public GameObject backdoor;
     public GameObject frontdoor;
@@ -20,28 +20,42 @@ public class RobberBehaviour : BTAgent
         base.Start();
         
         Sequence steal = new Sequence("Steal");
-        DynamicPSelector opendoor = new DynamicPSelector("Dynamic Door");
         Inverter invertMoney = new Inverter("invertMoney");
-        PSelector selectLoot = new PSelector("Select Loot");  // 🎯 新增：选择战利品
-
-        Leaf goToDiamond = new Leaf("Go to Diamond", GoToDiamond,1);
-        Leaf goToPainting = new Leaf("Go to Painting", GoToPainting,2);  // 🎯 新增：偷画节点
+        DynamicPSelector opendoor = new DynamicPSelector("Dynamic Door");
+        
+        // 🎯 主战利品选择器：钻石 vs 随机画作
+        PSelector lootPriority = new PSelector("Loot Priority");
+        
+        Leaf goToDiamond = new Leaf("Go to Diamond", GoToDiamond, 1);
         Leaf hasGotMoney = new Leaf("HasGotMoney", HasMoney);
-        Leaf goToBackdoor = new Leaf("Go to Backdoor", GoToBackdoor);
-        Leaf goToFrontdoor = new Leaf("Go to Frontdoor", GoToFrontdoor);
+        Leaf goToBackdoor = new Leaf("Go to Backdoor", GoToBackdoor, 1);
+        Leaf goToFrontdoor = new Leaf("Go to Frontdoor", GoToFrontdoor, 1);
         Leaf gotoVan = new Leaf("Go to Van", GoToVan);
+        
+        // 🎨 创建随机画作选择器（优先级比钻石低）
+        RandomSelector randomArt = new RandomSelector("Random Art");
+        randomArt.sortOrder = 2; // 画作优先级2
         
         invertMoney.AddChild(hasGotMoney);
         opendoor.AddChild(goToFrontdoor);
         opendoor.AddChild(goToBackdoor);
         
-        // 🎯 新增：将钻石和画作都加入选择器
-        selectLoot.AddChild(goToDiamond);
-        selectLoot.AddChild(goToPainting);
+        // 🎨 为所有画作创建节点并添加到随机选择器
+        for (int i = 0; i < art.Length; i++)
+        {
+            int index = i;
+            string artName = $"艺术品{i}";
+            Leaf goToArt = new Leaf($"Go to Art {i}", () => GoToArtTarget(art[index], artName), 1);
+            randomArt.AddChild(goToArt);
+        }
+        
+        // 🎯 主选择器：钻石(优先级1) vs 随机画作(优先级2)
+        lootPriority.AddChild(goToDiamond);
+        lootPriority.AddChild(randomArt);
         
         steal.AddChild(invertMoney);
         steal.AddChild(opendoor);
-        steal.AddChild(selectLoot);  // 🎯 新增：选择偷窃目标
+        steal.AddChild(lootPriority);
         steal.AddChild(gotoVan);
         
         tree.AddChild(steal);
@@ -63,21 +77,26 @@ public class RobberBehaviour : BTAgent
         if (s == Node.Status.SUCCESS)
         {
             money += ROBBERY_REWARD;
-            
-            // 🎯 修改：隐藏当前拿着的物品
+        
+            // 🎨 修改：隐藏当前拿着的所有物品
             if (diamond != null && diamond.transform.parent == this.transform)
             {
                 diamond.SetActive(false);
                 diamond.transform.parent = null;
                 Debug.Log("💰 钻石销赃成功！");
             }
-            if (painting != null && painting.transform.parent == this.transform)
+        
+            // 🎨 检查 art 数组中的所有画作
+            foreach (GameObject artObject in art)
             {
-                painting.SetActive(false);
-                painting.transform.parent = null;
-                Debug.Log("💰 画作销赃成功！");
+                if (artObject != null && artObject.transform.parent == this.transform)
+                {
+                    artObject.SetActive(false);
+                    artObject.transform.parent = null;
+                    Debug.Log($"💰 {artObject.name} 销赃成功！");
+                }
             }
-            
+        
             Debug.Log($"💰 获得金钱: {ROBBERY_REWARD}，当前金钱: {money}");
         }
         return s;
@@ -100,7 +119,6 @@ public class RobberBehaviour : BTAgent
         {
             Lock doorLock = door.GetComponent<Lock>();
         
-            // 🎯 修改：如果门没锁，禁用障碍物并返回SUCCESS
             if (doorLock != null && !doorLock.isLocked)
             {
                 NavMeshObstacle obstacle = door.GetComponent<NavMeshObstacle>();
@@ -112,8 +130,6 @@ public class RobberBehaviour : BTAgent
                 Debug.Log($"🚪 {door.name} 已打开");
                 return Node.Status.SUCCESS;
             }
-        
-            // 🎯 修改：如果门锁着，返回FAILURE让Selector尝试另一个门
             else
             {
                 Debug.Log($"🔒 {door.name} 被锁着，尝试另一个门");
@@ -122,40 +138,53 @@ public class RobberBehaviour : BTAgent
         }
         return status;
     }
-    public Node.Status GoToDiamond()
+    
+    public Node.Status GoToArtTarget(GameObject artObject, string artName)
     {
-        // 🎯 修改：检查钻石是否可用
-        if (diamond == null || !diamond.activeInHierarchy)
+        if (artObject == null || !artObject.activeInHierarchy)
+        {
+            Debug.Log($"🎨 {artName} 不可用");
             return Node.Status.FAILURE;
-            
-        Node.Status status = GotoLocation(diamond.transform.position);
+        }
+        
+        // 检查是否已经拿着这个画作了
+        if (artObject.transform.parent == this.transform)
+        {
+            Debug.Log($"🎨 已经拿着 {artName} 了");
+            return Node.Status.SUCCESS;
+        }
+        
+        Node.Status status = GotoLocation(artObject.transform.position);
+        
+        // 添加距离检查
+        float distance = Vector3.Distance(transform.position, artObject.transform.position);
+        Debug.Log($"🎨 前往 {artName} - 状态: {status}, 距离: {distance:F1} 米");
+        
         if (status == Node.Status.SUCCESS)
         {
-            diamond.transform.parent = this.gameObject.transform;
-            diamond.transform.localPosition = new Vector3(0, 2, 0);
-            diamond.transform.localScale = Vector3.one * 0.2f;
+            if (distance <= 2f) // 确保在合理距离内
+            {
+                artObject.transform.parent = this.gameObject.transform;
+                artObject.transform.localPosition = new Vector3(0, 2, 0);
+                artObject.transform.localScale = Vector3.one * 0.2f;
+                Debug.Log($"🎨 成功偷到 {artName}!");
+                return Node.Status.SUCCESS;
+            }
+            else
+            {
+                Debug.Log($"🎨 导航完成但距离还有 {distance:F1} 米，继续接近");
+                return Node.Status.RUNNING;
+            }
         }
-        return status;
-    }
-
-    // 🎯 新增：偷画作的方法
-    public Node.Status GoToPainting()
-    {
-        // 检查画作是否可用
-        if (painting == null || !painting.activeInHierarchy)
-            return Node.Status.FAILURE;
-            
-        Node.Status status = GotoLocation(painting.transform.position);
-        if (status == Node.Status.SUCCESS)
-        {
-            painting.transform.parent = this.gameObject.transform;
-            painting.transform.localPosition = new Vector3(0, 2, 0);
-            painting.transform.localScale = Vector3.one * 0.2f;
-        }
+        
         return status;
     }
     
-    // 🎯 新增：公共方法用于手动减少金钱
+    public Node.Status GoToDiamond()
+    {
+        return GoToArtTarget(diamond, "钻石");
+    }
+    
     public void SpendMoney(int amount)
     {
         money = Mathf.Max(0, money - amount);

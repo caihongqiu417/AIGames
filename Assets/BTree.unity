@@ -2160,9 +2160,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8bda1fa643876448897afe214441629, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
+  agent: {fileID: 642336162}
   diamond: {fileID: 1550492363}
-  painting: {fileID: 1904932022}
+  art:
+  - {fileID: 1904932022}
+  - {fileID: 1101234485}
+  - {fileID: 1922895633}
+  - {fileID: 1544815185}
   van: {fileID: 204906422}
   backdoor: {fileID: 919599686}
   frontdoor: {fileID: 1791870521}

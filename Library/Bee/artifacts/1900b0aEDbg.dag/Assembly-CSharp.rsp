@@ -361,6 +361,7 @@
 "Assets/BehaviourTree/Lock.cs"
 "Assets/BehaviourTree/Node.cs"
 "Assets/BehaviourTree/PSelector.cs"
+"Assets/BehaviourTree/RandomSelector.cs"
 "Assets/BehaviourTree/RobberBehaviour.cs"
 "Assets/BehaviourTree/Selector.cs"
 "Assets/BehaviourTree/Sequence.cs"

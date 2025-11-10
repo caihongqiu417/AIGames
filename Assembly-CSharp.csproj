@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Assets\Models\Rotate.cs" />
     <Compile Include="Assets\BehaviourTree\DynamicPSelector.cs" />
+    <Compile Include="Assets\BehaviourTree\RandomSelector.cs" />
     <Compile Include="Assets\BehaviourTree\RobberBehaviour.cs" />
     <Compile Include="Assets\BehaviourTree\Leaf.cs" />
     <Compile Include="Assets\BehaviourTree\PSelector.cs" />
