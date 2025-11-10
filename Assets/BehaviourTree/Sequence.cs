@@ -12,15 +12,26 @@ public class Sequence : Node
 
     public override Status Process()
     {
-        Status childstatus=children[currentChild].Process();
-        if (childstatus == Status.RUNNING) return Status.RUNNING;
-        if(childstatus == Status.FAILURE) return Status.FAILURE;
+        Status childstatus = children[currentChild].Process();
+        
+        if (childstatus == Status.RUNNING) 
+            return Status.RUNNING;
+            
+        if (childstatus == Status.FAILURE) 
+        {
+            // 🎯 修复：失败时重置计数器
+            currentChild = 0;
+            return Status.FAILURE;
+        }
+        
+        // SUCCESS 的情况
         currentChild++;
         if (currentChild >= children.Count)
         {
             currentChild = 0;
             return Status.SUCCESS;
         }
+        
         return Status.RUNNING;
     }
 }
