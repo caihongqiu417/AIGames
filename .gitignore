@@ -1,0 +1,15 @@
+Library/
+obj/
+Logs/
+Temp/
+Build/
+UserSettings/
+*.csproj
+*.sln
+*.pidb
+*.opendb
+*.db
+*.db-shm
+*.db-wal
+*.suo
+*.userprefs
